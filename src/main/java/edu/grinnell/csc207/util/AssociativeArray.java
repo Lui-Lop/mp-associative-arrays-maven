@@ -64,14 +64,14 @@ public class AssociativeArray<K, V> {
   public AssociativeArray<K, V> clone() {
     AssociativeArray<K, V> second = new AssociativeArray<K, V>();
     for (int i = 0; i < this.size; i++) {
-      if (second.size < this.size) {
+      if (second.size == this.pairs.length) {
         second.expand();
-      }
-      second.size++;
-      second.pairs[i] = new KVPair<>();
-      second.pairs[i].key = this.pairs[i].key;
-      second.pairs[i].val = this.pairs[i].val;
-    }
+      } // expand array when elements amount equal max size
+      try {
+        second.set(this.pairs[i].key, this.pairs[i].val);
+      } catch (NullKeyException a) {
+      } // end for handling exception
+    } // iterate through original array and set new array
     return second;
   } // clone()
 
@@ -81,11 +81,15 @@ public class AssociativeArray<K, V> {
    * @return a string of the form "{Key0:Value0, Key1:Value1, ... KeyN:ValueN}"
    */
   public String toString() {
-    String str = "";
+    String str = "{";
     for (int i = 0; i < this.size; i++) {
-      str = str + this.pairs[i].key + ":" + this.pairs[i].val + ", ";
-    }
-    return str;
+      if (i == this.size - 1) {
+        str = str + this.pairs[i].key + ":" + this.pairs[i].val;
+      } else {
+        str = str + this.pairs[i].key + ":" + this.pairs[i].val + ", ";
+      } // if last element, only print pair, else print with ','
+    } // go through pairs of array
+    return str + "}";
   } // toString()
 
   // +----------------+----------------------------------------------
@@ -105,27 +109,27 @@ public class AssociativeArray<K, V> {
    *                          If the client provides a null key.
    */
   public void set(K key, V value) throws NullKeyException {
-    if (this.size()% 15 > 0) {
+    if (this.size == this.pairs.length) {
       this.expand();
-    }
+    } // expands arary if amount of elements is same as max array
     if (key == null) {
       throw new NullKeyException();
-    }
+    } // throw exception if key is null
 
     if (hasKey(key)) {
       for (int i = 0; i < this.size; i++) {
         if (pairs[i].key.equals(key)) {
           this.pairs[i].val = value;
           return;
-        }
-      }
+        } // return if key is found
+      } // iterate to find key
     } else {
       this.pairs[this.size] = new KVPair<>();
       this.pairs[this.size].key = key;
       this.pairs[this.size].val = value;
       this.size++;
       return;
-    }
+    } // checks if key is found, if so change val, if not insert
   } // set(K,V)
 
   /**
@@ -145,7 +149,7 @@ public class AssociativeArray<K, V> {
     if (this.hasKey(key)) {
       int index = this.find(key);
       return this.pairs[index].val;
-    }
+    } // if key is found, return index
     throw new KeyNotFoundException();
   } // get(K)
 
@@ -162,8 +166,8 @@ public class AssociativeArray<K, V> {
     for (int i = 0; i < this.size; i++) {
       if (pairs[i].key.equals(key)) {
         return true;
-      }
-    }
+      } // if key is found, return true
+    } // iterate through pairs to find key
     return false;
   } // hasKey(K)
 
@@ -182,16 +186,16 @@ public class AssociativeArray<K, V> {
         if (pairs[i].key.equals(key)) {
           index = i;
           this.size--;
-        }
-      }
+        } // if key is found, set index and decrement size for removal
+      } // iterates through array to find key
       if (index > -1) {
         for (int shift = index; shift < this.size(); shift++) {
           this.pairs[shift].key = this.pairs[shift + 1].key;
           this.pairs[shift].val = this.pairs[shift + 1].val;
-        }
-      }
+        } // iterates through array to shift
+      } // if index has been set (> -1) should shift pairs down from that point
       this.pairs[this.size] = null;
-    }
+    } // checks if there is a key, then shifts down elements from it and removes duplicate
   } // remove(K)
 
   /**
@@ -232,8 +236,8 @@ public class AssociativeArray<K, V> {
     for (int i = 0; i < this.size; i++) {
       if (pairs[i].key.equals(key)) {
         return i;
-      }
-    }
+      } // end check if key is in array
+    } // end loop to check each pair in array
     throw new KeyNotFoundException();
   } // find(K)
 
