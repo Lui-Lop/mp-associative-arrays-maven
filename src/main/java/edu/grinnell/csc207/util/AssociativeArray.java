@@ -118,10 +118,11 @@ public class AssociativeArray<K, V> {
 
     if (hasKey(key)) {
       for (int i = 0; i < this.size; i++) {
-        if (pairs[i].key.equals(key)) {
-          this.pairs[i].val = value;
-          return;
-        } // return if key is found
+        try {
+          get(key);
+        } catch (KeyNotFoundException e) {
+          // empty since if before makes sure this can't happen
+        }
       } // iterate to find key
     } else {
       this.pairs[this.size] = new KVPair<>();
