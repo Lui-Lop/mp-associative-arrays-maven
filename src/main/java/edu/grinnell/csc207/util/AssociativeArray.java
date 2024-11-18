@@ -117,13 +117,12 @@ public class AssociativeArray<K, V> {
     } // throw exception if key is null
 
     if (hasKey(key)) {
-      for (int i = 0; i < this.size; i++) {
-        try {
-          get(key);
-        } catch (KeyNotFoundException e) {
-          // empty since if before makes sure this can't happen
-        }
-      } // iterate to find key
+      try {
+        int update = find(key);
+        this.pairs[update].val = value;
+      } catch (KeyNotFoundException e) {
+        // empty since if before makes sure this can't happen
+      } // stop throw error for find since if prevents it
     } else {
       this.pairs[this.size] = new KVPair<>();
       this.pairs[this.size].key = key;
@@ -196,7 +195,8 @@ public class AssociativeArray<K, V> {
         } // iterates through array to shift
       } // if index has been set (> -1) should shift pairs down from that point
       this.pairs[this.size] = null;
-    } // checks if there is a key, then shifts down elements from it and removes duplicate
+    } // checks if there is a key, then shifts down elements from it and removes
+      // duplicate
   } // remove(K)
 
   /**
